@@ -1,5 +1,6 @@
 from PyPDF2 import PdfReader as PyPdfReader
 import json
+import os
 
 class PdfReader():
     def __init__(self, pdf_path : str):
@@ -57,11 +58,16 @@ class PdfReader():
             "length" : self.get_page_count(),
             "pages" : []
         }
+
+        parent_dir = os.path.dirname(json_path)
+        if parent_dir and not os.path.exists(parent_dir):
+            os.makedirs(parent_dir, exist_ok=True)
+            
         for page_number, page in enumerate(self.pages):
             json_data["pages"].append({
                 "page_number" : page_number,
                 "page_text" : page.strip()
             })
 
-        with open(json_path, "w") as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(json_data, f, indent=4)
