@@ -1,11 +1,13 @@
-from PyPDF2 import PdfReader as PyPdfReader
+
+import pdfplumber
 import json
 import os
+import io
 
 class PdfReader():
-    def __init__(self, pdf_path : str):
+    def __init__(self, pdf_bytes : io.BytesIO):
         self.text = None
-        self.pdf_path = pdf_path
+        self.pdf_bytes = pdf_bytes
         self.pages = []
 
     def __enter__(self):
@@ -15,16 +17,14 @@ class PdfReader():
     def __exit__(self, exc_type, exc_value, traceback):
         self.pages = []
         self.text = None
-        self.pdf_path = None
+        self.pdf_bytes = None
     
     def read_pdf(self):
         try:
-            reader = PyPdfReader(self.pdf_path)
-            self.pages = [page.extract_text() or "" for page in reader.pages]
-            self.text = "\n".join(self.pages)
+            with pdfplumber.open(self.pdf_bytes) as pdf:
+                self.pages = [page.extract_text() for page in pdf.pages]
+            self.text = "/n".join(self.pages)
     
-        except FileNotFoundError:
-            raise Exception(f"File {self.pdf_path} not found")
         except Exception as e:
             raise Exception(f"Error reading PDF: {e}")
         
@@ -54,7 +54,6 @@ class PdfReader():
     
     def save_json(self, json_path : str):
         json_data = {
-            "pdf_file_path" : self.pdf_path,
             "length" : self.get_page_count(),
             "pages" : []
         }

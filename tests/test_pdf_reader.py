@@ -1,15 +1,23 @@
 from src.pdfReader import PdfReader
 import os
 import json
+import io
+
+def get_pdf_bytes(pdf_path : str):
+    with open(pdf_path, "rb") as f:
+        pdf_stream = f.read()
+    return io.BytesIO(pdf_stream)
 
 def test_count():
-    with PdfReader("data/sample-local-pdf.pdf") as r:
+    pdf_stream = get_pdf_bytes("data/sample-local-pdf.pdf")
+    with PdfReader(pdf_stream) as r:
         length = r.get_page_count()
         assert length > 0
         assert length == 3, "Length is not correct"
 
 def test_sample_json():
-    with PdfReader("data/sample-local-pdf.pdf") as r:
+    pdf_stream = get_pdf_bytes("data/sample-local-pdf.pdf")
+    with PdfReader(pdf_stream) as r:
         r.save_json("tests/test_output/sample.json")
     
         assert os.path.exists("tests/test_output/sample.json"), FileExistsError("File not found")
@@ -17,7 +25,6 @@ def test_sample_json():
     with open("tests/test_output/sample.json", "r") as j:
         data = json.load(j)
 
-    assert "pdf_file_path" in data
     assert "length" in data
     assert "pages" in data
 
@@ -25,6 +32,7 @@ def test_sample_json():
     assert "page_text" in data["pages"][0]
 
 def test_text():
-    with PdfReader("data/sample-local-pdf.pdf") as r:
+    pdf_stream = get_pdf_bytes("data/sample-local-pdf.pdf")
+    with PdfReader(pdf_stream) as r:
         assert r.get_text() is not None
 
