@@ -6,7 +6,7 @@ import io
 def get_pdf_bytes(pdf_path : str):
     with open(pdf_path, "rb") as f:
         pdf_stream = f.read()
-    return io.BytesIO(pdf_stream)
+    return (pdf_stream)
 
 def test_count():
     pdf_stream = get_pdf_bytes("data/sample-local-pdf.pdf")

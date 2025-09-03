@@ -1,23 +1,35 @@
-from fastapi import UploadFile, APIRouter
+from fastapi import UploadFile, APIRouter, Query
 from src.pdfReader import PdfReader
 import io
 
 router = APIRouter()
 
 @router.get("/")
-def test_response():
+def sucess_response():
     return {"message : Success"}
 
-@router.post("/uploadpdf/")
-async def test_upload_pdf(file: UploadFile):
+@router.post("/upload-pdf")
+async def upload_pdf(file: UploadFile):
     contents = await file.read()
+    text = "None"
     try:
-        pdf_stream = io.BytesIO(contents)  # Convert bytes to BytesIO
-        with PdfReader(pdf_stream) as r:
+        # PdfReader expects raw bytes; it wraps internally as needed
+        with PdfReader(contents) as r:
             text = r.get_text()
+        message = "Pdf Uploaded successfully"
     except Exception as e:
-        text = str(e)
-        raise Exception(f"Error while reading uploaded file")
+        # Return graceful error payload instead of raising
+        return {"filename": file.filename,
+                "type": str(type(contents)),
+                "message": "Wrong format",
+                "text": str(e)}
+        
     return {"filename": file.filename,
-            "type":str(type(contents)),
-            "text":text}
+            "type": str(type(contents)),
+            "message": message,
+            "text": text}
+
+@router.get("/search/")
+async def search(query : str = (Query(..., description="Search Query"))):
+    return {"query" : query,
+            "results" : "Functionality not implemented"}

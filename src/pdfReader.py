@@ -5,7 +5,7 @@ import os
 import io
 
 class PdfReader():
-    def __init__(self, pdf_bytes : io.BytesIO):
+    def __init__(self, pdf_bytes : bytes):
         self.text = None
         self.pdf_bytes = pdf_bytes
         self.pages = []
@@ -21,7 +21,7 @@ class PdfReader():
     
     def read_pdf(self):
         try:
-            with pdfplumber.open(self.pdf_bytes) as pdf:
+            with pdfplumber.open(io.BytesIO(self.pdf_bytes)) as pdf:
                 self.pages = [page.extract_text() for page in pdf.pages]
             self.text = "/n".join(self.pages)
     
