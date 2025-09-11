@@ -6,15 +6,14 @@ from src.main import app
 client = TestClient(app)
 
 def test_upload_pdf():
-    with patch("src.embeddings.embedder.embed_text", return_value = [0.1, 0.2, 0.3, 0.4]):
+    # Mock embeddings to match Chroma's expected dimension (1536)
+    with patch("src.embeddings.embedder.embed_text", return_value = [0.0] * 1536):
         pdf_path = Path("data/sample-local-pdf.pdf")
         with pdf_path.open("rb") as f:
             response = client.post(
                 "/upload-pdf", files = {"file":("sample-local-pdf.pdf", f, "application/pdf")}
             )
-    # TEMP: Help debug CI by failing with the response body
-    if response.status_code != 200:
-        assert False, f"status={response.status_code}, body={response.text}"
+    assert response.status_code == 200
     json_data = response.json()
     assert json_data["filename"] == "sample-local-pdf.pdf"
     assert "Pdf Uploaded successfully" in json_data["message"]
