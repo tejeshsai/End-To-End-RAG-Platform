@@ -1,7 +1,7 @@
 from fastapi import UploadFile, APIRouter, Query, HTTPException
 from src.pdfReader import PdfReader
 from pydantic import BaseModel
-from src.embeddings.embedder import embed_text
+from src.embeddings import embedder
 from src.embeddings.vector_store import VectorStore
 from src.utils.chunker import chunk_text
 
@@ -33,7 +33,7 @@ async def upload_pdf(file: UploadFile):
         message = "Pdf Uploaded successfully"
         chunks = chunk_text(text)
         for i, chunk in enumerate(chunks):
-            embedding = embed_text(chunk)
+            embedding = embedder.embed_text(chunk)
             vector_store.add_documents(doc_id = f"{i}", text = chunk, embedding = embedding)
 
     except Exception as e:
@@ -52,7 +52,7 @@ async def search(query : str = (Query(..., description="Search Query"))):
 @router.get("/semantic-search/", response_model= SearchQueryResult)
 async def semantic_search(q : str = (Query(..., description="Search Query"))):
     try:
-        query_embedding = embed_text(q)
+        query_embedding = embedder.embed_text(q)
         vector_store_results = vector_store.query(query_embedding = query_embedding, k = 3)
         results = vector_store_results["documents"]
         return {"query" : q,
