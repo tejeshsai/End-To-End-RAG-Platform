@@ -12,7 +12,9 @@ def test_upload_pdf():
             response = client.post(
                 "/upload-pdf", files = {"file":("sample-local-pdf.pdf", f, "application/pdf")}
             )
-    assert response.status_code == 200
+    # TEMP: Help debug CI by failing with the response body
+    if response.status_code != 200:
+        assert False, f"status={response.status_code}, body={response.text}"
     json_data = response.json()
     assert json_data["filename"] == "sample-local-pdf.pdf"
     assert "Pdf Uploaded successfully" in json_data["message"]

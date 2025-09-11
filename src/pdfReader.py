@@ -22,8 +22,8 @@ class PdfReader():
     def read_pdf(self):
         try:
             with pdfplumber.open(io.BytesIO(self.pdf_bytes)) as pdf:
-                self.pages = [page.extract_text() for page in pdf.pages]
-            self.text = "/n".join(self.pages)
+                self.pages = [page.extract_text() or "" for page in pdf.pages]
+            self.text = "\n".join(self.pages)
     
         except Exception as e:
             raise Exception(f"Error reading PDF: {e}")
