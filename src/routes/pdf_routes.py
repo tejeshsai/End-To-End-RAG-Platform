@@ -15,6 +15,10 @@ class SearchQueryResult(BaseModel):
     query : str
     results : str
 
+class SemanticSearchResult(BaseModel):
+    query : str
+    results : list[list[str]]
+
 vector_store = VectorStore(name = "pdf_embeddings")
 
 router = APIRouter()
@@ -31,7 +35,7 @@ async def upload_pdf(file: UploadFile):
         with PdfReader(contents) as r:
             text = r.get_text()
         message = "Pdf Uploaded successfully"
-        chunks = chunk_text(text)
+        chunks = chunk_text(text, chunk_size = 100, overlap = 20)
         for i, chunk in enumerate(chunks):
             embedding = embedder.embed_text(chunk)
             vector_store.add_documents(doc_id = f"{i}", text = chunk, embedding = embedding)
@@ -49,7 +53,7 @@ async def search(query : str = (Query(..., description="Search Query"))):
     return {"query" : query,
             "results" : "Functionality not implemented"}
 
-@router.get("/semantic-search/", response_model= SearchQueryResult)
+@router.get("/semantic-search/", response_model= SemanticSearchResult)
 async def semantic_search(q : str = (Query(..., description="Search Query"))):
     try:
         query_embedding = embedder.embed_text(q)
