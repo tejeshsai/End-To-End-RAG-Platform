@@ -57,7 +57,7 @@ async def search(query : str = (Query(..., description="Search Query"))):
 async def semantic_search(q : str = (Query(..., description="Search Query"))):
     try:
         query_embedding = embedder.embed_text(q)
-        vector_store_results = vector_store.query(query_embedding = query_embedding, k = 3)
+        vector_store_results = vector_store.query(query_embedding = query_embedding, top_k = 3)
         results = vector_store_results["documents"]
         return {"query" : q,
                 "results" : results}

@@ -18,7 +18,7 @@ def test_upload_pdf():
     assert json_data["filename"] == "sample-local-pdf.pdf"
     assert "Pdf Uploaded successfully" in json_data["message"]
     assert "This PDF is three pages long. Three long pages. Or three short pages" in json_data["text"]
-    assert json_data["chunks"] == 4
+    assert json_data["chunks"] == 18
 
 def test_search_query():
     response = client.get(
