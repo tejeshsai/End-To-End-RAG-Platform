@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from src.embeddings import embedder
 from src.embeddings.vector_store import VectorStore
 from src.utils.chunker import chunk_text
+from src.services.rag_service import answer_pdf_query
 
 class UploadPdfResponse(BaseModel):
     filename : str
@@ -64,3 +65,9 @@ async def semantic_search(q : str = (Query(..., description="Search Query"))):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing the query : {str(e)}")
 
+@router.get("/ask")
+async def ask_query(q: str = (Query(..., description="ask query"))):
+    try:
+        return answer_pdf_query(query = q)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error processing the query : {str(e)}")
