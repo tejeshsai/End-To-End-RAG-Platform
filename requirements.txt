@@ -11,3 +11,4 @@ python-dotenv
 langchain_core
 langchain_openai
 langchain
+langchain_chroma
