@@ -9,5 +9,5 @@ openai
 chromadb
 python-dotenv
 langchain_core
-lanchain_openai
+langchain_openai
 langchain
