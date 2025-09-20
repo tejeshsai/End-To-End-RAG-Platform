@@ -12,3 +12,5 @@ langchain_core
 langchain_openai
 langchain
 langchain_chroma
+black==24.4.2
+flake8==7.1.1
