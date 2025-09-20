@@ -18,7 +18,7 @@ class SearchQueryResult(BaseModel):
 
 class SemanticSearchResult(BaseModel):
     query : str
-    results : list[list[str]]
+    results : str
 
 vector_store = VectorStore(name = "pdf_embeddings")
 
@@ -65,9 +65,10 @@ async def semantic_search(q : str = (Query(..., description="Search Query"))):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing the query : {str(e)}")
 
-@router.get("/ask")
+@router.get("/ask", response_model = SemanticSearchResult)
 async def ask_query(q: str = (Query(..., description="ask query"))):
     try:
-        return answer_pdf_query(query = q)
+        answer = answer_pdf_query(query = q)
+        return {"query": q, "results": answer}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing the query : {str(e)}")

@@ -28,3 +28,21 @@ def test_search_query():
     json_data = response.json()
     assert json_data["query"] == "python"
     assert "results" in json_data
+
+def test_ask_query():
+    with patch("src.services.rag_service.create_retrieval_chain") as mock_chain:
+        # Mock the chain response
+        mock_chain.return_value.invoke.return_value = {"answer": "Returned Test Answer"}
+        response = client.get(
+            "/ask?q=who%20is%20the%20author?"
+            )
+            # TEMP: Debug the 400 error
+        if response.status_code != 200:
+            print(f"Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            assert False, f"Expected 200, got {response.status_code}: {response.text}"
+        assert response.status_code == 200
+        json_data = response.json()
+        assert json_data["results"] == "Returned Test Answer"
+        
+        

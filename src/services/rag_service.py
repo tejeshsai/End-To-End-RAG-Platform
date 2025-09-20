@@ -5,7 +5,7 @@ from langchain.chains import create_retrieval_chain
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 
-def get_retriever(collection_name, persist_directory):
+def get_retriever(collection_name : str, persist_directory : str):
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     return Chroma(
         collection_name = collection_name,
@@ -13,7 +13,7 @@ def get_retriever(collection_name, persist_directory):
         embedding_function = embeddings
     ).as_retriever(search_kwargs={"k": 4})
 
-def answer_pdf_query(query):
+def answer_pdf_query(query: str) -> str:
     retriever = get_retriever(collection_name = "pdf_embeddings", persist_directory = "chroma_db")
 
     system_prompt = "Answer the question based on the context.if you don't know please answer you don't know, \n\nContext:{context}"
