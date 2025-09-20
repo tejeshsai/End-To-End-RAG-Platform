@@ -21,7 +21,7 @@ class SearchQueryResult(BaseModel):
 
 class SemanticSearchResult(BaseModel):
     query: str
-    results: list[list[str]]
+    results: str
 
 
 vector_store = VectorStore(name="pdf_embeddings")
